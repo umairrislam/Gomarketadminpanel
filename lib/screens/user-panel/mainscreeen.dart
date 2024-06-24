@@ -13,7 +13,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../utils/app_constants.dart';
 import '../../widgets/banner_widget.dart';
 import '../../widgets/category_widget.dart';
-import '../../widgets/customdrawerwidget.dart';
+import '../adminpanel_mainscreen/customdrawerwidget.dart';
 import '../../widgets/heading_widget.dart';
 import '../auth-ui/welcome_screen.dart';
 

@@ -25,7 +25,7 @@ ProductModel({ required this.categoryId,required this.categoryName, required thi
    'isSale':isSale,
    'productDescription':productDescription,
     'categoryName':categoryName,
-    'createdAT':createdAt,
+    'createdAt':createdAt,
     'updatedAt':updatedAt,
     
 
@@ -38,7 +38,7 @@ factory ProductModel.fromMap(Map<String,dynamic>json){
     categoryId: json['categoryId'],
     productId: json['productId'],
     productName: json['productName'],
-    productImages: json[' productImages'],
+    productImages: json['productImages'],
      productDescription: json['productDescription'],
      isSale: json['isSale'],
      salePrice: json['salePrice'],

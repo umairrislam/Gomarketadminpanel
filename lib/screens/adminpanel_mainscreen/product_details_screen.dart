@@ -45,7 +45,7 @@ title: Text(productModel.productName),
                       Text("Product price"),
                       Container(
                         width: Get.width/2,
-                        child: Text(productModel.isSale==true?productModel.salePrice:productModel.fullPrice,overflow: TextOverflow.ellipsis,maxLines: 3,))
+                        child: Text(productModel.salePrice==''?productModel.fullPrice:productModel.salePrice,overflow: TextOverflow.ellipsis,maxLines: 3,))
                     ],
                   ),
                 ),

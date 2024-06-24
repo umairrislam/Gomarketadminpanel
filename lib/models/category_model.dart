@@ -2,7 +2,7 @@ class CategoriesModel{
   final String categoryId;
    final String categoryImg;
     final String categoryName;
-     final String createdAt;
+     final dynamic createdAt;
       final dynamic updatedAt;
       CategoriesModel({
         required this.categoryId,required this.categoryImg, required this.categoryName,required this.createdAt,required this.updatedAt
@@ -12,7 +12,7 @@ class CategoriesModel{
     'categoryId':categoryId,
     'categoryImg':categoryImg,
     'categoryName':categoryName,
-    'createdAT':createdAt,
+    'createdAt':createdAt,
     'updatedAt':updatedAt,
     
 

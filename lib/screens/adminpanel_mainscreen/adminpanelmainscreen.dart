@@ -2,7 +2,7 @@ import 'package:admin_panel/utils/app_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../widgets/customdrawerwidget.dart';
+import 'customdrawerwidget.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});

@@ -1,3 +1,4 @@
+import 'package:admin_panel/screens/adminpanel_mainscreen/all-categoriesa_adminscreen.dart.dart';
 import 'package:admin_panel/screens/adminpanel_mainscreen/allusersorderscreen.dart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,11 +7,11 @@ import 'package:get/get.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../screens/adminpanel_mainscreen/all_products_screen.dart';
-import '../screens/adminpanel_mainscreen/all_usersscreen.dart';
-import '../screens/auth-ui/welcome_screen.dart';
-import '../screens/user-panel/all_ordersscreen.dart';
-import '../utils/app_constants.dart';
+import 'all_products_screen.dart';
+import 'all_usersscreen.dart';
+import '../auth-ui/welcome_screen.dart';
+import '../user-panel/all_ordersscreen.dart';
+import '../../utils/app_constants.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
@@ -152,11 +153,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: 20,
               ),
               child: ListTile(
+                 onTap: () {
+                  Get.to(() => const AdminCategoriesScreen());
+                },
                 title: Text(
                   'Categories', style: TextStyle(color: AppConstant.TextColor),
                   textAlign: TextAlign.start,

@@ -1,10 +1,7 @@
-import 'package:admin_panel/models/product_model.dart';
-import 'package:admin_panel/screens/adminpanel_mainscreen/add_productscreen.dart';
-
-import 'package:admin_panel/screens/adminpanel_mainscreen/product_details_screen.dart';
+import 'package:admin_panel/models/category_model.dart';
+import 'package:admin_panel/screens/adminpanel_mainscreen/add_categories_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,42 +10,34 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 import '../../controllers/categorydropdowncontroller.dart';
-import '../../controllers/getuserlengthcontroller.dart';
-import '../../controllers/is_sale_controller.dart';
-import '../../models/user_model.dart';
+import '../../controllers/edit_category_controller.dart';
 import '../../utils/app_constants.dart';
-import 'edit_product_screen.dart';
+import 'edit_category_screen.dart';
 
-class AdminAllProductScreen extends StatefulWidget {
-  const AdminAllProductScreen({super.key, });
+class AdminCategoriesScreen extends StatelessWidget {
+  const AdminCategoriesScreen({super.key});
 
-  @override
-  State<AdminAllProductScreen> createState() => _AdminAllProductScreenState();
-}
-
-class _AdminAllProductScreenState extends State<AdminAllProductScreen> {
-  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-
-        backgroundColor: AppConstant.AppMainColor,
-        title:Text('All Product screen'),
-        actions: [
-          GestureDetector(
-            onTap: ()=>Get.to(()=>AddProductScreen()),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.add),
+    return Scaffold(appBar: AppBar(
+      backgroundColor: AppConstant.AppMainColor,
+      title: Text(' All Categories'),
+         actions: [
+          InkWell(
+            onTap: () => Get.to(() => const AddCategoriesScreen()),
+            child:  Padding(
+              padding: EdgeInsets.all(8.0),
+              child: GestureDetector(
+                  onTap: () => Get.to(() => const AddCategoriesScreen()),
+                child: Icon(Icons.add)),
             ),
-          )
+          ),
         ],
-      ),
-      body: StreamBuilder(
+    ),
+    body:StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection('products')
-            .orderBy('createdAt', descending: true)
+            .collection('categories')
+           // .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -65,7 +54,7 @@ class _AdminAllProductScreenState extends State<AdminAllProductScreen> {
           }
           if (snapshot.data!.docs.isEmpty) {
             return Center(
-              child: Text('No products found'),
+              child: Text('No Categories found'),
             );
           }
           if (snapshot.data != null) {
@@ -78,22 +67,15 @@ class _AdminAllProductScreenState extends State<AdminAllProductScreen> {
              
             itemBuilder: (context, index) {
               final Data = snapshot.data!.docs[index];
-               ProductModel productModel=ProductModel(
-                categoryId:  Data['categoryId'], 
-                categoryName: Data['categoryName'],
-                 productName: Data['productName'], 
-                 salePrice: Data['salePrice'], 
-                 deliveryTime: Data['deliveryTime'],
-                  fullPrice:Data['fullPrice'],
-                   productDescription: Data['productDescription'],
-                    productImages: Data['productImages'],
-                     productId: Data['productId'], 
-                     isSale: Data['isSale'],
-                      createdAt:Data['createdAt'],
-                       updatedAt: Data[ 'updatedAt'],
-                       );
+             CategoriesModel categoriesModel=CategoriesModel(
+              categoryId:Data['categoryId'] ,
+               categoryImg:Data['categoryImg'],
+                categoryName:Data['categoryName'],
+                 createdAt:Data['createdAt'],
+                  updatedAt: Data['updatedAt'],
+                  );
                     return SwipeActionCell(
-      key: ObjectKey(productModel.productId), /// this key is necessary
+      key: ObjectKey(categoriesModel.categoryId), /// this key is necessary
       trailingActions: <SwipeAction>[
         SwipeAction(
             title: "Delete",
@@ -112,8 +94,17 @@ class _AdminAllProductScreenState extends State<AdminAllProductScreen> {
               onConfirm: ()async {
                 Get.back();
                 EasyLoading.show(status: 'Please wait');
-                await deleteImagesFromFirebase(productModel.productImages);
-                 await FirebaseFirestore.instance.collection("products").doc(productModel.productId).delete();
+                 EditCategoryController editCategoryController =
+                                  Get.put(EditCategoryController(
+                                      categoriesModel: categoriesModel));
+
+                              await editCategoryController
+                                  .deleteImagesFromStorage(
+                                      categoriesModel.categoryImg);
+
+                              await editCategoryController
+                                  .deleteWholeCategoryFromFireStore(
+                                      categoriesModel.categoryId);
                  EasyLoading.dismiss();
               },
               buttonColor: Colors.red,
@@ -129,35 +120,26 @@ class _AdminAllProductScreenState extends State<AdminAllProductScreen> {
                       color: AppConstant.TextColor,
                       child: GestureDetector(
                         onTap: () {
-                          Get.to(()=>AdminSingleProductDetailScreen(productModel:productModel));
+                          // Get.to(()=>AdminSingleProductDetailScreen(productModel:productModel));
                         },
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: AppConstant.AppMainColor,
                             backgroundImage:
-                                CachedNetworkImageProvider(productModel.productImages[0],
+                                CachedNetworkImageProvider(categoriesModel.categoryImg.toString(),
                                 errorListener: () {
                                   print("error loading image");
                                   Icon(Icons.error);
                                 },
                                 ),
                           ),
-                          title: Text(productModel.productName),
-                          subtitle: Text(productModel.productId),
+                          title: Text(categoriesModel.categoryName),
+                          subtitle: Text(categoriesModel.categoryId),
                           trailing: GestureDetector(
-                             onTap: () {
-                            final editProdouctCategory =
-                                Get.put(CategoryDropDownController());
-                            final issaleController =
-                                Get.put(isSaleController());
-                            editProdouctCategory
-                                .setOldValue(productModel.categoryId);
-
-                            issaleController
-                                .setIsSaleOldValue(productModel.isSale);
-                            Get.to(() =>
-                                EditProductScreen(productModel: productModel));
-                          },
+                             onTap: ()  => Get.to(
+                                () => EditCategoryScreen(
+                                    categoriesModel: categoriesModel),
+                              ),
                             child: Icon(Icons.edit)),
                         ),
                       ),
@@ -172,21 +154,7 @@ class _AdminAllProductScreenState extends State<AdminAllProductScreen> {
             );
           }
           return Container();
-        }),
+        }) ,
     );
-  }
-  Future deleteImagesFromFirebase(List imagesUrl)async{
-    final FirebaseStorage storage=FirebaseStorage.instance;
-for(String imageUrl in imagesUrl){
-  try{
-    Reference reference=storage.refFromURL(imageUrl);
-    await reference.delete();
-
-  }catch(e){
-    print("error$e");
-
-  }
-}
-
   }
 }

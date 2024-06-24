@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -69,4 +71,24 @@ void removeimages(int index){
   update();
 
 }
+//
+ Future<void> uploadFunction(List<XFile> _images) async {
+    arrimagesurl.clear();
+    for (int i = 0; i < _images.length; i++) {
+      dynamic imageUrl = await uplaodFile(_images[i]);
+      arrimagesurl.add(imageUrl.toString());
+    }
+    update();
+  }
+
+  //
+  Future<String> uplaodFile(XFile _image) async {
+    TaskSnapshot reference = await storageRef
+        .ref()
+        .child("product-images")
+        .child(_image.name + DateTime.now().toString())
+        .putFile(File(_image.path));
+
+    return await reference.ref.getDownloadURL();
+  }
 }
